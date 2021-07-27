@@ -29,7 +29,6 @@ class _MyAppState extends State<MyApp> {
     _controller.dispose();
     super.dispose();
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +49,11 @@ class _MyAppState extends State<MyApp> {
             ),
 
             // dispaly responce if any
-            if(_response != null)Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(_response!),
-            ),
+            if (_response != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(_response!),
+              ),
 
             // buttons
             Row(
@@ -61,14 +61,16 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: (){
-                    UssdAdvanced.sendUssd(code: _controller.text, subscriptionId: 1);
+                  onPressed: () {
+                    UssdAdvanced.sendUssd(
+                        code: _controller.text, subscriptionId: 1);
                   },
                   child: const Text('norma request'),
                 ),
                 ElevatedButton(
-                  onPressed: ()async{
-                    String? _res =await UssdAdvanced.sendAdvancedUssd(code: _controller.text, subscriptionId: 1);
+                  onPressed: () async {
+                    String? _res = await UssdAdvanced.sendAdvancedUssd(
+                        code: _controller.text, subscriptionId: 1);
                     setState(() {
                       _response = _res;
                     });

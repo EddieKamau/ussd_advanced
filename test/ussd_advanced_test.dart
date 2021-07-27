@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ussd_advanced/ussd_advanced.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.elyudde.com/ussd_advanced');
+  const MethodChannel channel =
+      MethodChannel('plugins.elyudde.com/ussd_advanced');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -18,6 +19,7 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await UssdAdvanced.sendAdvancedUssd(code: "*100#"), 'Your account is');
+    expect(
+        await UssdAdvanced.sendAdvancedUssd(code: "*100#"), 'Your account is');
   });
 }

@@ -5,9 +5,7 @@ Run ussd code directly in your application
 ## Usage
 
 Add dependency to pubspec.yaml file
-```
-flutter_phone_direct_caller: ^2.0.0
-```
+
 
 ### Android
 You'll need to add the `CALL_PHONE` permission and `READ_PHONE_STATE` to your Android Manifest.

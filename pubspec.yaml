@@ -1,6 +1,6 @@
 name: ussd_advanced
 description: Run ussd code directly in your application
-version: 0.0.1
+version: 0.1.1
 homepage: https://github.com/EddieKamau/ussd_advanced
 
 environment:
