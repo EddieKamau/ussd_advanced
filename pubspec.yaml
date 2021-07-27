@@ -1,7 +1,7 @@
 name: ussd_advanced
 description: Run ussd code directly in your application
 version: 0.0.1
-homepage:
+homepage: https://github.com/EddieKamau/ussd_advanced
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
