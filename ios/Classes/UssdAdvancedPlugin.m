@@ -14,10 +14,11 @@
     NSString* number = call.arguments[@"code"];
     result(@([self directCall:number]));
   }else if ([@"sendAdvancedUssd" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+    result(FlutterMethodNotImplemented);
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
 
   - (BOOL)directCall:(NSString*)number {
     number = [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
