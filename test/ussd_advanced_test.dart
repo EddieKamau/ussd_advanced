@@ -4,7 +4,7 @@ import 'package:ussd_advanced/ussd_advanced.dart';
 
 void main() {
   const MethodChannel channel =
-  MethodChannel('method.com.phan_tech/ussd_advanced');
+      MethodChannel('method.com.phan_tech/ussd_advanced');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
