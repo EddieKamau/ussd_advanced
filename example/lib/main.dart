@@ -62,20 +62,32 @@ class _MyAppState extends State<MyApp> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    UssdAdvanced.sendUssd(
-                        code: _controller.text, subscriptionId: 1);
+                    UssdAdvanced.sendUssd(code: _controller.text, subscriptionId: 1);
                   },
-                  child: const Text('norma request'),
+                  child: const Text('norma\nrequest'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    String? _res = await UssdAdvanced.sendAdvancedUssd(
-                        code: _controller.text, subscriptionId: 1);
+                    String? _res = await UssdAdvanced.sendAdvancedUssd(code: _controller.text, subscriptionId: 1);
                     setState(() {
                       _response = _res;
                     });
                   },
-                  child: const Text('advanced request'),
+                  child: const Text('single session\nrequest'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    String? _res = await UssdAdvanced.multisessionUssd(code: _controller.text, subscriptionId: 1);
+                    setState(() {
+                      _response = _res;
+                    });
+                    String? _res2 = await UssdAdvanced.sendMessage('0');
+                    setState(() {
+                      _response = _res2;
+                    });
+                    await UssdAdvanced.cancelSession();
+                  },
+                  child: const Text('multi session\nrequest'),
                 ),
               ],
             )

@@ -15,15 +15,14 @@ import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
 import android.telephony.TelephonyManager.UssdResponseCallback
 import android.util.Log
+import android.view.accessibility.AccessibilityEvent
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.*
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
@@ -31,7 +30,7 @@ import java.util.concurrent.CompletableFuture
 
 
 /** UssdAdvancedPlugin */
-class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, BasicMessageChannel.MessageHandler<String?>  {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -40,23 +39,22 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     private var context: Context? = null
     private var activity: Activity? = null
     private var senderActivity: Activity? = null
+    private val ussdApi: USSDApi = USSDController
+    private var event: AccessibilityEvent? = null
+
+
+    private lateinit var basicMessageChannel: BasicMessageChannel<String>
 
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "plugins.elyudde.com/ussd_advanced")
     channel.setMethodCallHandler(this)
       this.context = flutterPluginBinding.applicationContext
+      basicMessageChannel  = BasicMessageChannel(
+          flutterPluginBinding.binaryMessenger,
+          "BasicMessageChannelPlugin", StringCodec.INSTANCE
+      )
   }
-    fun registerWith(registrar: Registrar) {
-        val instance = UssdAdvancedPlugin()
-        instance.initialize(registrar.context(), registrar.messenger())
-        this.context = registrar.context()
-    }
-
-    private fun initialize(context: Context, messenger: BinaryMessenger) {
-        this.context = context
-
-    }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
@@ -74,40 +72,60 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         senderActivity = binding.activity
     }
 
+    private fun setListener(){
+        basicMessageChannel.setMessageHandler(this)
+    }
 
+    override fun onMessage(message: String?, reply: BasicMessageChannel.Reply<String?>) {
+        if(message != null){
+            USSDController.send2(message, event!!){
+                event = AccessibilityEvent.obtain(it)
+                try {
+                    if(it.text.isNotEmpty()) {
+                        reply.reply(it.text.first().toString())
+                    }else{
+                        reply.reply(null)
+                    }
+                } catch (e: Exception){}
+
+            }
+        }
+    }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     var subscriptionId:Int = 1
     var code:String? = ""
 
-        val subscriptionIdInteger = call.argument<Int>("subscriptionId")
-            ?: throw RequestParamsException(
-                "Incorrect parameter type: `subscriptionId` must be an int"
-            )
-        subscriptionId = subscriptionIdInteger
-        if (subscriptionId < -1 ) {
-            throw RequestParamsException(
-                "Incorrect parameter value: `subscriptionId` must be >= -1"
-            )
-        }
-        code = call.argument<String>("code")
-        if (code == null) {
-            throw RequestParamsException("Incorrect parameter type: `code` must be a String")
-        }
-        if (code!!.isEmpty()) {
-            throw RequestParamsException(
-                "Incorrect parameter value: `code` must not be an empty string"
-            )
+        if(call.method == "sendUssd" ||call.method == "sendAdvancedUssd" ||call.method == "multisessionUssd"){
+            val subscriptionIdInteger = call.argument<Int>("subscriptionId")
+                ?: throw RequestParamsException(
+                    "Incorrect parameter type: `subscriptionId` must be an int"
+                )
+            subscriptionId = subscriptionIdInteger
+            if (subscriptionId < -1 ) {
+                throw RequestParamsException(
+                    "Incorrect parameter value: `subscriptionId` must be >= -1"
+                )
+            }
+            code = call.argument<String>("code")
+            if (code == null) {
+                throw RequestParamsException("Incorrect parameter type: `code` must be a String")
+            }
+            if (code.isEmpty()) {
+                throw RequestParamsException(
+                    "Incorrect parameter value: `code` must not be an empty string"
+                )
+            }
         }
 
       when (call.method) {
           "sendUssd" -> {
-              result.success(defaultUssdService(code, subscriptionId))
+              result.success(defaultUssdService(code!!, subscriptionId))
 
           }
           "sendAdvancedUssd" -> {
               if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                  val res = singleSessionUssd(code, subscriptionId)
+                  val res = singleSessionUssd(code!!, subscriptionId)
                   if(res != null){
 
                       res.exceptionally { e: Throwable? ->
@@ -125,8 +143,30 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
                       result.success(res);
                   }
               }else{
-                  result.success(defaultUssdService(code, subscriptionId))
+                  result.success(defaultUssdService(code!!, subscriptionId))
               }
+          }
+          "multisessionUssd" -> {
+
+              // check permissions
+              if (ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                  if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.CALL_PHONE)) {
+                      ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CALL_PHONE), 2)
+                  }
+              }else if (ContextCompat.checkSelfPermission(this.context!!, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                  if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.READ_PHONE_STATE)) {
+                      ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.READ_PHONE_STATE), 2)
+                  }
+              }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                  multisessionUssd(code!!, subscriptionId, result)
+
+              }else{
+                  result.success(defaultUssdService(code!!, subscriptionId))
+              }
+
+          }
+          "multisessionUssdCancel" ->{
+              multisessionUssdCancel()
           }
           else -> {
               result.notImplemented()
@@ -224,6 +264,45 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
             return  null
         }
 
+    }
+
+    private fun multisessionUssd(ussdCode:String, subscriptionId:Int, @NonNull result: Result){
+        var slot = subscriptionId
+        if(subscriptionId == -1){
+            slot = 0
+        }
+
+        ussdApi.callUSSDInvoke(activity!!, ussdCode, slot, object : USSDController.CallbackInvoke {
+
+            override fun responseInvoke(ev: AccessibilityEvent) {
+                event = AccessibilityEvent.obtain(ev)
+                setListener()
+
+                try {
+                    if(ev.text.isNotEmpty()) {
+                        result.success(ev.text.first().toString())
+                    }else{
+                        result.success(null)
+                    }
+                }catch (e: Exception){}
+            }
+
+            override fun over(message: String) {
+                try {
+                    basicMessageChannel.setMessageHandler(null)
+                    basicMessageChannel.send(message)
+                    result.success(message)
+                }catch (e: Exception){}
+
+            }
+        })
+    }
+
+    private fun multisessionUssdCancel(){
+        if(event != null){
+            basicMessageChannel.setMessageHandler(null)
+            ussdApi.cancel2(event!!);
+        }
     }
 
     private val simSlotName = arrayOf(

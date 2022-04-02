@@ -13,7 +13,8 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -41,5 +42,17 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+       <service
+           android:name="com.example.ussd_advanced.USSDServiceKT"
+           android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+           android:exported="false">
+           <intent-filter>
+               <action android:name="android.accessibilityservice.AccessibilityService" />
+           </intent-filter>
+           <meta-data
+               android:name="android.accessibilityservice"
+               android:resource="@xml/ussd_service" />
+       </service>
     </application>
 </manifest>
