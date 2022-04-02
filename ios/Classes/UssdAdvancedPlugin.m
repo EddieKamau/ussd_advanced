@@ -14,7 +14,11 @@
     NSString* number = call.arguments[@"code"];
     result(@([self directCall:number]));
   }else if ([@"sendAdvancedUssd" isEqualToString:call.method]) {
-    result(FlutterMethodNotImplemented);
+    NSString* number = call.arguments[@"code"];
+    result(@([self directCall:number]));
+  }else if ([@"multisessionUssd" isEqualToString:call.method]) {
+    NSString* number = call.arguments[@"code"];
+    result(@([self directCall:number]));
   } else {
     result(FlutterMethodNotImplemented);
   }
