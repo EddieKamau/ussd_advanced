@@ -8,7 +8,7 @@
  * BoostTag E.I.R.L. All Copyright Reserved
  * www.boosttag.com
  */
-package com.example.ussd_advanced
+package com.phan_tech.ussd_advanced
 
 import android.annotation.SuppressLint
 import android.app.Activity

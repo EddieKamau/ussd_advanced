@@ -1,5 +1,5 @@
 name: ussd_advanced
-description: Runs ussd code directly in your application, supports single session and multi session ussd calls 
+description: Runs ussd code directly in your application, supports single session and multi session ussd calls
 version: 1.0.0
 homepage: https://github.com/EddieKamau/ussd_advanced
 
@@ -15,7 +15,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  
+
 
 # The following section is specific to Flutter.
 flutter:
@@ -26,7 +26,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.ussd_advanced
+        package: com.phan_tech.ussd_advanced
         pluginClass: UssdAdvancedPlugin
       ios:
         pluginClass: UssdAdvancedPlugin

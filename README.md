@@ -19,7 +19,7 @@ Add ussd dialog accessibility service to your Android Manifet inside application
 <application>
 ...
   <service
-      android:name="com.example.ussd_advanced.USSDServiceKT"
+      android:name="com.phan_tech.ussd_advanced.USSDServiceKT"
       android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
       android:exported="false">
       <intent-filter>
@@ -33,7 +33,7 @@ Add ussd dialog accessibility service to your Android Manifet inside application
 ```
 
 ### iOS
-Add this to your ```info.plist``` under ```dict``` 
+Add this to your ```info.plist``` under ```dict```
 ```
 <key>LSApplicationQueriesSchemes</key>
 <array>

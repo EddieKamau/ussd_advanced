@@ -3,7 +3,7 @@
 @implementation UssdAdvancedPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.elyudde.com/ussd_advanced"
+      methodChannelWithName:@"method.com.phan_tech/ussd_advanced"
             binaryMessenger:[registrar messenger]];
   UssdAdvancedPlugin* instance = [[UssdAdvancedPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

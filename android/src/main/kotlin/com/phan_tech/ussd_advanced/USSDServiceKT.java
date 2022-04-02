@@ -3,7 +3,7 @@
  * All rights reserved
  * porfile.romellfudi.com
  */
-package com.example.ussd_advanced;
+package com.phan_tech.ussd_advanced;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ClipData;

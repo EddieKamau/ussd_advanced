@@ -1,4 +1,4 @@
-group 'com.example.ussd_advanced'
+group 'com.phan_tech.ussd_advanced'
 version '1.0-SNAPSHOT'
 
 buildscript {
