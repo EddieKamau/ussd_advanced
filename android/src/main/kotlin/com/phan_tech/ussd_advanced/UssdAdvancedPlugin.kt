@@ -172,6 +172,8 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
             }
           }
 
+          result.success("")
+
 
         }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
           multisessionUssd(code!!, subscriptionId, result)
