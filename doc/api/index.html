@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 6.0.1">
+  <meta name="description" content="ussd_advanced API docs, for the Dart programming language.">
+  <title>ussd_advanced - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/EddieKamau/ussd_advanced">ussd_advanced package</a></li>
+  </ol>
+  <div class="self-name">ussd_advanced</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="sun">
+    <span class="material-symbols-outlined">
+      light_mode
+    </span>
+  </div>
+  <div class="toggle" id="theme-button">
+    <label for="theme" class="switch">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div class="moon">
+    <span class="material-symbols-outlined">
+      dark_mode
+    </span>
+  </div>
+</header>
+<main>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="ussd_advanced">ussd_advanced</h1>
+<p>Run ussd code directly in your application</p>
+<h2 id="usage">Usage</h2>
+<p>Add dependency to pubspec.yaml file</p>
+<h3 id="android">Android</h3>
+<p>You'll need to add the <code>CALL_PHONE</code> permission and <code>READ_PHONE_STATE</code> to your Android Manifest.</p>
+<pre class="language-XML"><code class="language-XML">    &lt;uses-permission android:name="android.permission.CALL_PHONE" /&gt;
+    &lt;uses-permission android:name="android.permission.READ_PHONE_STATE" /&gt;
+</code></pre>
+<h3 id="for-android-mutli-session-ussd">For android mutli-session ussd</h3>
+<p>Add ussd dialog accessibility service to your Android Manifet inside application</p>
+<pre class="language-XML"><code class="language-XML">&lt;application&gt;
+...
+  &lt;service
+      android:name="com.phan_tech.ussd_advanced.USSDServiceKT"
+      android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+      android:exported="false"&gt;
+      &lt;intent-filter&gt;
+          &lt;action android:name="android.accessibilityservice.AccessibilityService" /&gt;
+      &lt;/intent-filter&gt;
+      &lt;meta-data
+          android:name="android.accessibilityservice"
+          android:resource="@xml/ussd_service" /&gt;
+  &lt;/service&gt;
+&lt;/application&gt;
+</code></pre>
+<h3 id="ios">iOS</h3>
+<p>Add this to your <code>info.plist</code> under <code>dict</code></p>
+<pre class="language-dart"><code>&lt;key&gt;LSApplicationQueriesSchemes&lt;/key&gt;
+&lt;array&gt;
+  &lt;string&gt;tel&lt;/string&gt;
+&lt;/array&gt;
+</code></pre>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">import 'package:flutter/material.dart';
+
+import 'package:flutter/services.dart';
+import 'package:ussd_advanced/ussd_advanced.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State&lt;MyApp&gt; createState() =&gt; _MyAppState();
+}
+
+class _MyAppState extends State&lt;MyApp&gt; {
+  late TextEditingController _controller;
+  String? _response;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Ussd Plugin example'),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            // text input
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'Ussd code'),
+            ),
+
+            // dispaly responce if any
+            if (_response != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(_response!),
+              ),
+
+            // buttons
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    UssdAdvanced.sendUssd(code: _controller.text, subscriptionId: 1);
+                  },
+                  child: const Text('norma\nrequest'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    String? _res = await UssdAdvanced.sendAdvancedUssd(code: _controller.text, subscriptionId: 1);
+                    setState(() {
+                      _response = _res;
+                    });
+                  },
+                  child: const Text('single session\nrequest'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    String? _res = await UssdAdvanced.multisessionUssd(code: _controller.text, subscriptionId: 1);
+                    setState(() {
+                      _response = _res;
+                    });
+                    String? _res2 = await UssdAdvanced.sendMessage('0');
+                    setState(() {
+                      _response = _res2;
+                    });
+                    await UssdAdvanced.cancelSession();
+                  },
+                  child: const Text('multi session\nrequest'),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+</code></pre>
+<h3 id="methods">Methods</h3>
+<ul>
+<li>The <code>sendUssd</code> runs the ussd normaly without a response.</li>
+<li>The <code>sendAdvancedUssd</code> (single session call) runs ussd in background and gives you the response as a string. It only surports android 8+(SDK 26+). It defaults to <code>sendUssd</code> when the SDK is lower. For multisession USSDs, send the request as one, ie;</li>
+</ul>
+<pre class="language-dart"><code class="language-dart">UssdAdvanced.sendAdvancedUssd(code: "*123*1*4*3#", subscriptionId: -1);
+</code></pre>
+<ul>
+<li>The <code>multisessionUssd</code> runs a multi session call giving all the sessions response as String. One can interact with the ussd dialog by sending a message using <code>sendMessage</code> method and canceling the session by calling <code>cancelSession</code></li>
+</ul>
+<h3 id="selecting-simcard">Selecting SimCard</h3>
+<p>You can select which simcard to use providing <code>subscriptionId</code>.
+-1: is for default phone setting.
+Only supports android 6+, and defaults to default if the SDK is lower</p>
+<p>Support the plugin <a href="https://www.buymeacoffee.com/EddieGenius" target="_blank"><img src="https://i.imgur.com/aV6DDA7.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important; box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;"> </a></p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="ussd_advanced">
+  <span class="name"><a href="ussd_advanced/ussd_advanced-library.html">ussd_advanced</a></span> 
+
+</dt>
+<dd>Run ussd code directly in your application
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="https://github.com/EddieKamau/ussd_advanced">ussd_advanced package</a></li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">ussd_advanced</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="ussd_advanced/ussd_advanced-library.html">ussd_advanced</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    ussd_advanced
+      1.1.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
