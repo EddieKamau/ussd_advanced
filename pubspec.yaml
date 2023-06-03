@@ -1,6 +1,6 @@
 name: ussd_advanced
 description: Runs ussd code directly in your application, supports single session and multi session ussd calls
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/EddieKamau/ussd_advanced
 
 environment:

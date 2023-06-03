@@ -73,14 +73,14 @@ class UssdAdvanced {
     return _response;
   }
 
-  static Stream<String?> onEnd() {
+  static StreamController<String?> onEnd() {
     StreamController<String?> _streamController = StreamController<String?>();
     _basicMessageChannel.setMessageHandler((message) async {
       _streamController.add(message);
       return message ?? '';
     });
 
-    return _streamController.stream;
+    return _streamController;
   }
 }
 
