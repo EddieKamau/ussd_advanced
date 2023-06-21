@@ -1,7 +1,5 @@
 package com.phan_tech.ussd_advanced
 
-import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -22,9 +20,12 @@ import androidx.core.content.ContextCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.*
+import io.flutter.plugin.common.BasicMessageChannel
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.StringCodec
 import java.util.concurrent.CompletableFuture
 
 
@@ -172,7 +173,7 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
             }
           }
 
-          result.success("")
+          result.success(null)
 
 
         }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -298,7 +299,8 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
 
         try {
           if(ev.text.isNotEmpty()) {
-            result.success(ev.text.first().toString())
+            result.success(java.lang.String.join("\n", ev.text))
+//            result.success(ev.text.first().toString())
           }else{
             result.success(null)
           }

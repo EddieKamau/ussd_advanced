@@ -14,8 +14,12 @@ import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.flutter.Log;
 
 
 /**
@@ -47,7 +51,10 @@ public class USSDServiceKT extends AccessibilityService {
         }
         String response = null;
         if(!event.getText().isEmpty()) {
-            response = event.getText().get(0).toString();
+            List<CharSequence> res = event.getText();
+            res.remove("SEND");
+            res.remove("CANCEL");
+            response = String.join("\n", res );
         }
         if (LoginView(event) && notInputText(event)) {
             // first view or logView, do nothing, pass / FIRST MESSAGE
