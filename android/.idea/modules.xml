@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ussd_advanced.iml" filepath="$PROJECT_DIR$/.idea/modules/ussd_advanced.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ussd_advanced.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ussd_advanced.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ussd_advanced.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ussd_advanced.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ussd_advanced.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ussd_advanced.unitTest.iml" />
+    </modules>
+  </component>
+</project>
