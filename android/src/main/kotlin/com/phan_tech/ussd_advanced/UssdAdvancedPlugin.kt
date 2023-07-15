@@ -119,6 +119,15 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
     }
 
     when (call.method) {
+      "hasPermissions" -> {
+        result.success(hasPermissions())
+
+      }
+      "requestPermissions" -> {
+          requestPermissions()
+        result.success(null)
+
+      }
       "sendUssd" -> {
         result.success(defaultUssdService(code!!, subscriptionId))
 
@@ -150,29 +159,9 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
 
         // check permissions
         if(
-          ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
-          ContextCompat.checkSelfPermission(this.context!!, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
-          !isAccessibilityServiceEnabled(this.context!!)
+          !hasPermissions()
         ){
-          if(!isAccessibilityServiceEnabled(this.context!!)) {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            this.context!!.startActivity(intent)
-
-          }
-
-          if (ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.CALL_PHONE)) {
-              ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CALL_PHONE), 2)
-            }
-          }
-
-          if (ContextCompat.checkSelfPermission(this.context!!, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.READ_PHONE_STATE)) {
-              ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.READ_PHONE_STATE), 2)
-            }
-          }
-
+          requestPermissions()
           result.success(null)
 
 
@@ -192,6 +181,36 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
       }
     }
   }
+
+    private fun hasPermissions() : Boolean{
+        return !(
+                ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this.context!!, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                !isAccessibilityServiceEnabled(this.context!!)
+                )
+    }
+
+    private fun requestPermissions(){
+        if(!isAccessibilityServiceEnabled(this.context!!)) {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            this.context!!.startActivity(intent)
+
+        }
+
+        if (ContextCompat.checkSelfPermission(context!!, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.CALL_PHONE)) {
+                ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.CALL_PHONE), 2)
+            }
+        }
+
+        if (ContextCompat.checkSelfPermission(this.context!!, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity!!, android.Manifest.permission.READ_PHONE_STATE)) {
+                ActivityCompat.requestPermissions(activity!!, arrayOf(android.Manifest.permission.READ_PHONE_STATE), 2)
+            }
+        }
+
+    }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
@@ -309,9 +328,9 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
 
       override fun over(message: String) {
         try {
-          basicMessageChannel.setMessageHandler(null)
           basicMessageChannel.send(message)
           result.success(message)
+          basicMessageChannel.setMessageHandler(null)
         }catch (e: Exception){}
 
       }
@@ -320,8 +339,8 @@ class UssdAdvancedPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, Basic
 
   private fun multisessionUssdCancel(){
     if(event != null){
-      basicMessageChannel.setMessageHandler(null)
       ussdApi.cancel2(event!!);
+      basicMessageChannel.setMessageHandler(null)
     }
   }
 

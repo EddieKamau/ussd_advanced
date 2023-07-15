@@ -82,6 +82,18 @@ class UssdAdvanced {
 
     return _streamController;
   }
+
+  static Future<bool> hasPermissions()async{
+    try{
+      return (await _channel.invokeMethod('hasPermissions')) == true;
+    }catch(_){return false;}
+  }
+
+  static void requestPermissions(){
+    try{
+      _channel.invokeMethod('requestPermissions');
+    }catch(_){}
+  }
 }
 
 class _CodeAndBody {
